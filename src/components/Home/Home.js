@@ -1,36 +1,57 @@
-import axios from "axios";
-import React,{useState,useEffect} from "react";
+import React, { useState } from "react";
 import Country from "./Country";
 import "./Home.css";
 
 
-const Home = () => {
-const [countries,setCountries] = useState([])
+const Home = ({ capital }) => {
 
+  const [countries, setCountries] = useState([])
+  const [country, setCountry] = useState("")
 
-useEffect( () => {
- fetch(`https://restcountries.com/v2/all`)
- .then(response => response.json())
- .then(data => setCountries(data))
-},[])
+  const getCountry = (e) => {
+    e.preventDefault();
+    const inputCountry = e.target.value;
+    setCountry(inputCountry);
 
-console.log(countries)
+  }
+  const submitCountry = () => {
+
+    fetch(`https://restcountries.com/v3.1/name/${country}`)
+      .then(response => response.json())
+      .then(data => setCountries(data[0]))
+  }
+
   return (
-    <div>
-   {
-    countries.map((country) => <Country country={country} ></Country>)
-   }
+    <div className="container">
+      <div className="row">
+        <div className="justify-content-center align-items-center">
+          <div className="searchBox">
+            <div className="inputBox ">
+              <input onChange={getCountry} type="text" required placeholder="Enter Country" />
+              <button onClick={submitCountry} type="submit">Search</button>
+            </div>
+            <div className="infoArea">
+              {
+                !countries?.name ? '' :
+                  <div className="countryInfo">
+                    < img src={countries?.flags?.png} alt="" />
+                    <h3> Capital : {countries?.capital}</h3>
+                    <h3> Population : {countries?.population}</h3>
+                    <h3>Latlng : {capital?.latlng}</h3>
+                  </div>
+              }
+            </div>
+            <div className="weatherInfo">
+              {
+                !countries?.capital ? '' : <Country capital={countries.capital} />
+              }
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Home;
- // <div className="text-center">
-    //  <div className="mt-5">
-    //  <div>
-    //  <input  type="search" name="search" placeholder="Search here" />
-    //  </div>
-    //  <br></br>
-    //  <br></br>
-    //  <input type="submit" className="btn btn-primary" onClick={handleClick} />
-     
